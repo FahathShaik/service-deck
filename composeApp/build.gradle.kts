@@ -42,8 +42,37 @@ compose.desktop {
 
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
-            packageName = "com.fahad.servicedeck"
-            packageVersion = "1.0.0"
+            packageName = "Service Deck"
+            packageVersion = "1.0.1"
+
+            description = "Professional Microservices Manager"
+            vendor = "Fahad"
+            copyright = "© 2024 Fahad. All rights reserved."
+
+            modules("java.instrument", "java.scripting", "jdk.unsupported")
+
+            linux {
+                shortcut = true
+                packageName = "servicedeck"
+                appCategory = "Development"
+                menuGroup = "Development"
+            }
+            windows {
+                shortcut = true
+                menu = true
+                menuGroup = "Service Deck"
+                upgradeUuid = "6724a87c-5c8e-4735-86a4-44b1c3143c72"
+                perUserInstall = false // This makes it show up properly for all users in Apps & Features
+                if (project.file("icon.ico").exists()) {
+                    iconFile.set(project.file("icon.ico"))
+                }
+            }
+            macOS {
+                bundleID = "com.fahad.servicedeck"
+                if (project.file("icon.icns").exists()) {
+                    iconFile.set(project.file("icon.icns"))
+                }
+            }
         }
     }
 }

@@ -8,10 +8,15 @@ import kotlinx.serialization.json.Json
 import java.io.File
 
 class ServiceStorage(
-    private val servicesFile: File = File("services.json"),
-    private val projectsFile: File = File("projects.json")
+    private val servicesFile: File,
+    private val projectsFile: File
 ) {
     private val json = Json { prettyPrint = true; ignoreUnknownKeys = true }
+
+    init {
+        // Ensure parent directories exist
+        servicesFile.parentFile?.mkdirs()
+    }
 
     fun saveServices(services: List<Service>) {
         val jsonString = json.encodeToString(services.map { it.copy(status = ServiceStatus.STOPPED) })

@@ -16,6 +16,25 @@ import com.fahad.microservices_manager.ui.App
 import com.fahad.microservices_manager.ui.state.ServicesViewModel
 import com.fahad.microservices_manager.ui.theme.DevPilotTheme
 import javax.swing.UIManager
+import java.io.File
+
+fun getAppDataDir(): File {
+    val os = System.getProperty("os.name").lowercase()
+    val userHome = System.getProperty("user.home")
+    val appDir = "ServiceDeck"
+    
+    val baseDir = when {
+        os.contains("win") -> System.getenv("APPDATA") ?: userHome
+        os.contains("mac") -> "$userHome/Library/Application Support"
+        else -> "$userHome/.local/share"
+    }
+    
+    val dir = File(baseDir, appDir)
+    if (!dir.exists()) {
+        dir.mkdirs()
+    }
+    return dir
+}
 
 fun main() {
     try {
@@ -23,8 +42,14 @@ fun main() {
     } catch (_: Exception) {}
 
     application {
+        val appDataDir = remember { getAppDataDir() }
         val manager = remember { DesktopServiceManager() }
-        val storage = remember { ServiceStorage() }
+        val storage = remember { 
+            ServiceStorage(
+                servicesFile = File(appDataDir, "services.json"),
+                projectsFile = File(appDataDir, "projects.json")
+            ) 
+        }
         val scope = rememberCoroutineScope()
         val viewModel = remember { ServicesViewModel(manager, storage, scope) }
 
