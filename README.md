@@ -1,6 +1,6 @@
-# ServiceDeck — Professional Microservices Manager
+# ServiceDeck — Microservices Manager
 
-ServiceDeck is a modern, high-performance desktop orchestrator designed to streamline the management of local microservices. Built with Kotlin Multiplatform and Compose Multiplatform, it provides a unified control center for Spring Boot, Quarkus, Micronaut, and other JVM-based services.
+ServiceDeck is a desktop application designed to simplify local microservice development by providing a unified interface to manage and run multiple services efficiently.
 
 <img width="1595" height="940" alt="image" src="https://github.com/user-attachments/assets/f007fd4b-a6c7-453e-afaf-243d04fe85f5" />
 
