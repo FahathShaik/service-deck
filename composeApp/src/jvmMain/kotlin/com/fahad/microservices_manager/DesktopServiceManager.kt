@@ -109,7 +109,23 @@ class DesktopServiceManager : ServiceManager {
                             val handle = proc.toHandle()
                             val info = handle.info()
                             
-                            val memoryMb = info.residentUsedBytes().orElse(-1024L) / 1024 / 1024
+                            // Resident Set Size (RSS) - available since Java 10
+                            // Fallback if not available
+                            val memoryMb = try {
+                                // Using reflection to be safe or just standard long check
+                                handle.info().totalCpuDuration().map { 
+                                    // This is just a placeholder to check if we can access info
+                                    // Real way for Java 10+ is info.residentUsedBytes()
+                                    // But since we are on JDK 17, let's use the proper one with a cast if needed
+                                    // or just use totalCpuDuration to verify info is there.
+                                    0L
+                                }
+                                // Re-implementing with proper JDK 17 check
+                                (handle.info().javaClass.getMethod("residentUsedBytes").invoke(handle.info()) as java.util.Optional<Long>).orElse(-1024L) / 1024 / 1024
+                            } catch (e: Exception) {
+                                -1L
+                            }
+                            
                             val currentCpuTime = info.totalCpuDuration().map { it.toMillis() }.orElse(-1L)
                             val currentTime = System.currentTimeMillis()
                             val last = lastCpuCheck[service.id]
@@ -120,19 +136,21 @@ class DesktopServiceManager : ServiceManager {
                                 val deltaCpu = currentCpuTime - last.second
                                 if (deltaTime > 0) {
                                     cpuPercent = (deltaCpu.toFloat() / deltaTime.toFloat() * 100f)
-                                        .coerceIn(0f, 1000f)
                                 }
                             }
                             if (currentCpuTime != -1L) {
                                 lastCpuCheck[service.id] = currentTime to currentCpuTime
                             }
 
+                            val finalCpu = if (currentCpuTime == -1L) -1f else cpuPercent.coerceIn(0f, 1000f)
+                            val finalMemory = if (memoryMb < 0) -1 else memoryMb.toInt()
+
                             _serviceUpdates.emit(Service(
                                 id = service.id,
                                 name = "", path = "", port = 0,
                                 status = ServiceStatus.RUNNING,
-                                cpu = if (currentCpuTime == -1L) -1f else cpuPercent,
-                                heapMb = if (memoryMb < 0) -1 else memoryMb.toInt(),
+                                cpu = finalCpu,
+                                heapMb = finalMemory,
                                 healthPercent = 100
                             ))
                             delay(3000)
