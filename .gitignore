@@ -1,27 +1,59 @@
-# Compiled class file
-*.class
+# Gradle
+.gradle
+build/
+**/build/
+gradle.properties
+!gradle-wrapper.properties
 
-# Log file
+# Kotlin / JVM
+*.iml
+*.ipr
+*.iws
+.kotlin
+bin/
+out/
+.attach_pid*
+
+# IntelliJ IDEA
+.idea/
+!.idea/codeStyles/
+!.idea/copyright/
+!.idea/compiler.xml
+!.idea/jarRepositories.xml
+!.idea/misc.xml
+!.idea/modules.xml
+!.idea/vcs.xml
+!.idea/vcs.xml.lock
+*.ipr
+*.iws
+*.iml
+atlassian-ide-plugin.xml
+com_zeroturnaround_jrebel_remoting_xml.xml
+com_zeroturnaround_jrebel_xml.xml
+jrebel.lst
+
+# OS Specific
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# ServiceDeck Local Data
+# Do not commit your local services or projects configuration as they contain local paths
+services.json
+projects.json
+composeApp/services.json
+composeApp/projects.json
 *.log
+logs/
+**/logs/
 
-# BlueJ files
-*.ctxt
+# Compose Multiplatform generated
+composeApp/build/
+.metadata/
 
-# Mobile Tools for Java (J2ME)
-.mtj.tmp/
-
-# Package Files #
-*.jar
-*.war
-*.nar
-*.ear
-*.zip
-*.tar.gz
-*.rar
-
-# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
-hs_err_pid*
-replay_pid*
-
-# Kotlin Gradle plugin data, see https://kotlinlang.org/docs/whatsnew20.html#new-directory-for-kotlin-data-in-gradle-projects
-.kotlin/
+# Local configuration
+local.properties
