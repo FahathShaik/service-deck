@@ -7,7 +7,7 @@ ServiceDeck is a desktop application designed to simplify local microservice dev
 
 ## 📥 Download
 
-ServiceDeck is available as a native application for **Windows**, **macOS**, and **Linux**. You can download the latest installers from the [Releases](https://github.com/YOUR_USERNAME/YOUR_REPO/releases) page:
+ServiceDeck is available as a native application for **Windows**, **macOS**, and **Linux**. You can download the latest installers from the [Releases](https://github.com/FahathShaik/service-deck/releases) page:
 
 - **Windows:** `.msi` installer
 - **macOS:** `.dmg` disk image
