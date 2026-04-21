@@ -2,7 +2,8 @@
 
 ServiceDeck is a modern, high-performance desktop orchestrator designed to streamline the management of local microservices. Built with Kotlin Multiplatform and Compose Multiplatform, it provides a unified control center for Spring Boot, Quarkus, Micronaut, and other JVM-based services.
 
-![App Screenshot](APP-UI.png)
+<img width="1595" height="940" alt="image" src="https://github.com/user-attachments/assets/f007fd4b-a6c7-453e-afaf-243d04fe85f5" />
+
 
 ## 📥 Download
 
