@@ -43,11 +43,11 @@ compose.desktop {
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
             packageName = "Service Deck"
-            packageVersion = "1.0.1"
+            packageVersion = "1.0.2"
 
-            description = "Professional Microservices Manager"
-            vendor = "Fahad"
-            copyright = "© 2024 Fahad. All rights reserved."
+            description = "Microservices Manager"
+            vendor = "Service Deck"
+            copyright = "© 2024 Service Deck. All rights reserved."
 
             modules("java.instrument", "java.scripting", "jdk.unsupported")
 

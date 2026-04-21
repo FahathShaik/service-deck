@@ -45,7 +45,7 @@ fun Sidebar(
         if (project == null) emptyList() else services.filter { it.id in project.serviceIds }
     }
     val runningServices = selectedProjectServices.filter { it.status == ServiceStatus.RUNNING }
-    val totalHeapMb = runningServices.sumOf { it.heapMb }
+    val totalHeapMb = runningServices.filter { it.heapMb > 0 }.sumOf { it.heapMb }
     val activePorts = runningServices.map { it.port }.distinct()
 
     Column(
@@ -84,12 +84,12 @@ fun Sidebar(
             Spacer(Modifier.width(10.dp))
             Column {
                 Text(
-                    "ServiceDeck",
+                    "Service Deck",
                     style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
                     color = DevPilotColors.text0
                 )
                 Text(
-                    "Professional v2.4.1",
+                    "v1.0.2",
                     style = MaterialTheme.typography.bodyMedium.copy(
                         fontFamily = FontFamily.Monospace,
                         fontSize = 11.sp

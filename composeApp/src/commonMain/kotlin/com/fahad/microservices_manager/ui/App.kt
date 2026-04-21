@@ -335,6 +335,7 @@ fun App(viewModel: ServicesViewModel, onExit: () -> Unit) {
 
         if (state.showExitConfirmation) {
             ExitConfirmationModal(
+                hasRunningServices = viewModel.hasRunningServices(),
                 onDismiss = { viewModel.showExitConfirmation(false) },
                 onConfirm = {
                     viewModel.confirmExit(onExit)

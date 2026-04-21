@@ -16,6 +16,7 @@ import kotlin.random.Random
 class DesktopServiceManager : ServiceManager {
     private val runningProcesses = ConcurrentHashMap<String, Process>()
     private val lastStoppedAt = ConcurrentHashMap<String, Long>()
+    private val lastCpuCheck = ConcurrentHashMap<String, Pair<Long, Long>>() // serviceId to (timestamp, cpuTime)
     private val _serviceUpdates = MutableSharedFlow<Service>(extraBufferCapacity = 64)
     override val serviceUpdates: SharedFlow<Service> = _serviceUpdates
     private val _logStream = MutableSharedFlow<Pair<String, LogEntry>>(extraBufferCapacity = 512)
@@ -87,11 +88,10 @@ class DesktopServiceManager : ServiceManager {
                 }
 
                 if (process.isAlive) {
-                    // Mark as RUNNING even if port check failed (it might have started on a dynamic port detected via logs)
                     val runningService = service.copy(
                         status = ServiceStatus.RUNNING,
-                        cpu = Random.nextFloat() * 10 + 5,
-                        heapMb = Random.nextInt(64, 128),
+                        cpu = 0f,
+                        heapMb = 0,
                         healthPercent = if (isStarted || service.port > 0) 100 else 70
                     )
                     _serviceUpdates.emit(runningService)
@@ -102,23 +102,42 @@ class DesktopServiceManager : ServiceManager {
                         emitLog(service.id, LogLevel.WARN, "Service ${service.name} started, waiting for runtime port detection from logs…")
                     }
 
-                    // Metrics simulation loop
+                    // Real metrics monitoring loop
                     scope.launch {
-                        var cpu = runningService.cpu
-                        var heap = runningService.heapMb
                         while (runningProcesses[service.id]?.isAlive == true) {
-                            delay(2500)
-                            cpu = (cpu + (Random.nextFloat() * 8 - 4)).coerceIn(3f, 92f)
-                            heap = (heap + Random.nextInt(-15, 20)).coerceIn(32, 768)
+                            val proc = runningProcesses[service.id]!!
+                            val handle = proc.toHandle()
+                            val info = handle.info()
+                            
+                            val memoryMb = info.residentUsedBytes().orElse(-1024L) / 1024 / 1024
+                            val currentCpuTime = info.totalCpuDuration().map { it.toMillis() }.orElse(-1L)
+                            val currentTime = System.currentTimeMillis()
+                            val last = lastCpuCheck[service.id]
+                            
+                            var cpuPercent = 0f
+                            if (last != null && currentCpuTime != -1L) {
+                                val deltaTime = currentTime - last.first
+                                val deltaCpu = currentCpuTime - last.second
+                                if (deltaTime > 0) {
+                                    cpuPercent = (deltaCpu.toFloat() / deltaTime.toFloat() * 100f)
+                                        .coerceIn(0f, 1000f)
+                                }
+                            }
+                            if (currentCpuTime != -1L) {
+                                lastCpuCheck[service.id] = currentTime to currentCpuTime
+                            }
+
                             _serviceUpdates.emit(Service(
                                 id = service.id,
                                 name = "", path = "", port = 0,
                                 status = ServiceStatus.RUNNING,
-                                cpu = cpu,
-                                heapMb = heap,
+                                cpu = if (currentCpuTime == -1L) -1f else cpuPercent,
+                                heapMb = if (memoryMb < 0) -1 else memoryMb.toInt(),
                                 healthPercent = 100
                             ))
+                            delay(3000)
                         }
+                        lastCpuCheck.remove(service.id)
                     }
 
                     // Wait for process to end
@@ -223,7 +242,7 @@ class DesktopServiceManager : ServiceManager {
             service.framework.lowercase().contains("maven") || File(path, "pom.xml").exists() -> {
                 val mvnw = if (isWindows()) "mvnw.cmd" else "./mvnw"
                 if (File(path, mvnw.removePrefix("./")).exists()) {
-                    if (isWindows()) listOf(mvnw, "spring-boot:run")
+                    if (isWindows()) listOf("cmd", "/c", mvnw, "spring-boot:run")
                     else listOf("sh", mvnw, "spring-boot:run")
                 }
                 else listOf("mvn", "spring-boot:run")
@@ -233,7 +252,7 @@ class DesktopServiceManager : ServiceManager {
                     File(path, "build.gradle.kts").exists() -> {
                 val gw = if (isWindows()) "gradlew.bat" else "./gradlew"
                 if (File(path, gw.removePrefix("./")).exists()) {
-                    if (isWindows()) listOf(gw, "bootRun")
+                    if (isWindows()) listOf("cmd", "/c", gw, "bootRun")
                     else listOf("sh", gw, "bootRun")
                 }
                 else listOf("gradle", "bootRun")

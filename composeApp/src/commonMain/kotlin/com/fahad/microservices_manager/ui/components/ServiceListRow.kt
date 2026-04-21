@@ -154,7 +154,7 @@ fun ServiceListRow(
 
         // Port
         Text(
-            text = service.port.toString(),
+            text = if (service.port == 0) "Auto" else service.port.toString(),
             style = MaterialTheme.typography.bodyLarge.copy(
                 fontFamily = FontFamily.Monospace,
                 fontSize = 13.sp
@@ -164,13 +164,14 @@ fun ServiceListRow(
         )
 
         // CPU
+        val isActive = service.status == ServiceStatus.RUNNING
         Text(
-            text = if (service.status == ServiceStatus.RUNNING) "${"%.1f".format(service.cpu)}%" else "—",
+            text = if (isActive && service.cpu >= 0f) "${"%.1f".format(service.cpu)}%" else "—",
             style = MaterialTheme.typography.bodyLarge.copy(
                 fontFamily = FontFamily.Monospace,
                 fontSize = 13.sp
             ),
-            color = if (service.status == ServiceStatus.RUNNING)
+            color = if (isActive && service.cpu >= 0f)
                 (if (service.cpu > 80) DevPilotColors.red else DevPilotColors.green)
             else DevPilotColors.text3,
             modifier = Modifier.width(70.dp)
@@ -178,12 +179,12 @@ fun ServiceListRow(
 
         // Heap
         Text(
-            text = if (service.status == ServiceStatus.RUNNING) "${service.heapMb}MB" else "—",
+            text = if (isActive && service.heapMb >= 0) "${service.heapMb}MB" else "—",
             style = MaterialTheme.typography.bodyLarge.copy(
                 fontFamily = FontFamily.Monospace,
                 fontSize = 13.sp
             ),
-            color = if (service.status == ServiceStatus.RUNNING) DevPilotColors.blue else DevPilotColors.text3,
+            color = if (isActive && service.heapMb >= 0) DevPilotColors.blue else DevPilotColors.text3,
             modifier = Modifier.width(70.dp)
         )
 

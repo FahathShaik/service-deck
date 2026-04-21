@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -35,6 +36,7 @@ import com.fahad.microservices_manager.ui.theme.DevPilotRadius
 
 @Composable
 fun ExitConfirmationModal(
+    hasRunningServices: Boolean,
     onDismiss: () -> Unit,
     onConfirm: () -> Unit
 ) {
@@ -52,13 +54,16 @@ fun ExitConfirmationModal(
                 Box(
                     modifier = Modifier
                         .size(48.dp)
-                        .background(DevPilotColors.amberDim, RoundedCornerShape(DevPilotRadius.lg)),
+                        .background(
+                            if (hasRunningServices) DevPilotColors.amberDim else DevPilotColors.blueDim,
+                            RoundedCornerShape(DevPilotRadius.lg)
+                        ),
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
-                        Icons.Default.Warning,
+                        if (hasRunningServices) Icons.Default.Warning else Icons.Default.ExitToApp,
                         contentDescription = null,
-                        tint = DevPilotColors.amber,
+                        tint = if (hasRunningServices) DevPilotColors.amber else DevPilotColors.blue,
                         modifier = Modifier.size(24.dp)
                     )
                 }
@@ -74,7 +79,10 @@ fun ExitConfirmationModal(
                 Spacer(Modifier.height(8.dp))
                 
                 Text(
-                    "Some services are still running. Would you like to stop them and exit?",
+                    if (hasRunningServices) 
+                        "Some services are still running. Would you like to stop them and exit?"
+                    else 
+                        "Are you sure you want to close Service Deck?",
                     style = MaterialTheme.typography.bodyMedium,
                     color = DevPilotColors.text2,
                     modifier = Modifier.padding(horizontal = 8.dp),
@@ -99,12 +107,12 @@ fun ExitConfirmationModal(
                         onClick = onConfirm,
                         modifier = Modifier.weight(1f),
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = DevPilotColors.red,
+                            containerColor = if (hasRunningServices) DevPilotColors.red else DevPilotColors.blue,
                             contentColor = Color.White
                         ),
                         shape = RoundedCornerShape(DevPilotRadius.md)
                     ) {
-                        Text("Stop & Exit")
+                        Text(if (hasRunningServices) "Stop & Exit" else "Exit")
                     }
                 }
             }

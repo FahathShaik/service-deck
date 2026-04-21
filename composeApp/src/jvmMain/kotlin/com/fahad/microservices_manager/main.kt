@@ -37,10 +37,6 @@ fun getAppDataDir(): File {
 }
 
 fun main() {
-    try {
-        UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName())
-    } catch (_: Exception) {}
-
     application {
         val appDataDir = remember { getAppDataDir() }
         val manager = remember { DesktopServiceManager() }
@@ -55,13 +51,12 @@ fun main() {
 
         Window(
             onCloseRequest = {
-                if (viewModel.hasRunningServices()) {
-                    viewModel.showExitConfirmation(true)
-                } else {
-                    exitApplication()
-                }
+                viewModel.showExitConfirmation(true)
             },
-            title = "ServiceDeck — Professional Microservices Manager",
+            title = "Service Deck",
+            undecorated = false,
+            transparent = false,
+            resizable = true,
             state = WindowState(
                 width = 1600.dp,
                 height = 980.dp,

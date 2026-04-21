@@ -273,14 +273,14 @@ fun ServiceCard(
                     val isActive = service.status == ServiceStatus.RUNNING
                     MetricItem(
                         label = "CPU",
-                        value = if (isActive) "${"%.1f".format(service.cpu)}%" else "—",
-                        color = if (isActive) (if (service.cpu > 80) DevPilotColors.red else DevPilotColors.green) else DevPilotColors.text3
+                        value = if (isActive && service.cpu >= 0f) "${"%.1f".format(service.cpu)}%" else "—",
+                        color = if (isActive && service.cpu >= 0f) (if (service.cpu > 80) DevPilotColors.red else DevPilotColors.green) else DevPilotColors.text3
                     )
                     Box(modifier = Modifier.width(1.dp).height(24.dp).background(DevPilotColors.border1))
                     MetricItem(
                         label = "HEAP",
-                        value = if (isActive) "${service.heapMb}MB" else "—",
-                        color = if (isActive) DevPilotColors.blue else DevPilotColors.text3
+                        value = if (isActive && service.heapMb >= 0) "${service.heapMb}MB" else "—",
+                        color = if (isActive && service.heapMb >= 0) DevPilotColors.blue else DevPilotColors.text3
                     )
                     Box(modifier = Modifier.width(1.dp).height(24.dp).background(DevPilotColors.border1))
                     MetricItem(
